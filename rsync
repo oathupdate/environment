@@ -1,0 +1,41 @@
+# 依赖inotify和rsync实现文件修改后自动同步到服务器
+
+apt-get install inotify-tools -y
+systemctl start rsync.service
+
+# 同步脚本  my_sync
+#!/bin/bash
+path=/home/user/code
+last_time=0
+dev='user@10.8.106.94'
+/usr/bin/inotifywait -mrq --format '%w%f' -e create,close_write,delete $path  | while read line  
+do
+    cur_time=`date +%s`
+    rt=`expr $cur_time - $last_time`
+    if [ $rt -gt 5 ]; then
+      rsync -az --delete --exclude "mff/build" $path $dev:/home/user
+      last_time=$cur_time
+    fi
+done
+
+# 自动启动
+mkdir -p ~/.config/systemd/user
+cd ~/.config/systemd/user
+
+vi my-sync.service 在文件中输入如下内容
+[Unit]
+Description=fast remote file copy program daemon
+Documentation=man:rsync(1) man:rsyncd.conf(5)
+ConditionPathExists=/usr/local/bin/my_sync
+After=rsync.service
+
+[Service]
+ExecStart=/usr/local/bin/my_sync &
+
+[Install]
+WantedBy=multi-user.target
+
+
+---------------安装并启动服务-----------
+systemctl --user enable my-sync.service
+systemctl --user start my-sync.service

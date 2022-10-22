@@ -1,0 +1,15 @@
+
+
+echo -e "filter=-build/include_subdir,-build/namespaces\nlinelength=100" > ~/CPPLINT.cfg #CPPLINT配置
+mkdir -p ~/.vim/pack/git-plugins/start
+cd ~/.vim/pack/git-plugins/start
+git clone --depth=1 https://github.com/bfrg/vim-cpp-modern
+
+
+git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/plugin/Vundle.vim # 执行：vim命令PluginInstall安装
+
+cd ~/.vim/bundle
+git clone https://github.com/ycm-core/YouCompleteMe.git
+cd ~/.vim/bundle/YouCompleteMe
+ git submodule update --init --recursive
+  ./install.py

@@ -1,0 +1,11 @@
+# ssh会话保持,同session免密登录
+echo 'Host *
+    KeepAlive yes
+    ServerAliveInterval 300
+    ControlMaster auto
+    ControlPath /tmp/ssh-%r@%h:%p
+    ControlPersist 10m' >> ~/.ssh/config
+
+# 远程免密登录服务器
+cd ~/.ssh && ssh-keygen： 输入id_rsa创建公钥和私钥
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@xxx.xxx.xxx.xxx # 将pub文件写如到服务器上的~/.ssh/authorized_keys, 如果没有ssh-copy-id命令需要手动写文件
